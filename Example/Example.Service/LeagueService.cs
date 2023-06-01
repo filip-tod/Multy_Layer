@@ -38,5 +38,18 @@ namespace Example.Service
                 return null;
             }
         }
+        public List<League> Post(League league) 
+        {
+            try
+            {
+                LeagueRepository repository = new LeagueRepository();
+                var result = repository.Post(league);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
     }
 }

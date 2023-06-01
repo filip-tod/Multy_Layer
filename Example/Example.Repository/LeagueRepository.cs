@@ -4,6 +4,7 @@ using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -82,6 +83,7 @@ namespace Example.Repository
 
                                 };
                                 leagueTeams.Add(league);
+
                             }
                         }
                     }
@@ -89,6 +91,52 @@ namespace Example.Repository
             }
             return leagueTeams;
         }
+        public bool Post(League league)
+        {
+            List<League> leagueTeams = new List<League>();
+            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = "INSERT INTO nba_league  (id, division, commissioner) VALUES (@id, @division, @commissioner)";
+                using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+                {
+                    List<League> leagueData = new List<League>();
+                    try
+                    {
+                        int maxId = leagueData.Max(p => p.Id);
+                        int Newid = maxId ++;
+                        connection.Open();
+                        NpgsqlTransaction transaction = connection.BeginTransaction();
+
+
+                        NpgsqlCommand cmd = new NpgsqlCommand($"INSERT INTO nba_league (id, division, commissioner) VALUES (@id, @division, @commissioner)", connection);
+
+                        cmd.Parameters.AddWithValue("Id", Newid);
+                        cmd.Parameters.AddWithValue("FirstName", league.Division);
+                        cmd.Parameters.AddWithValue("LastName", league.Commissioner);
+
+
+                        int affectedRowsPerson = cmd.ExecuteNonQuery();
+                        transaction.Commit();
+
+                        if (affectedRowsPerson > 0)
+                        {
+                            return true;
+                        }
+
+                        transaction.Rollback();
+                        return false;
+
+                    }
+                    catch (Exception)
+                    {
+                        return false;
+                    }
+
+
+                }
+            }
+        }
     }
-  
 }

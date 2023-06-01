@@ -12,5 +12,7 @@ namespace Example.Repository.Common
         List<League> Get();
 
         List<League> GetById(int id);
+
+        List<League> Post(League league);
     }
 }

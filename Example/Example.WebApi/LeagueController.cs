@@ -38,5 +38,17 @@ namespace Example.WebApi
             }
             return Request.CreateResponse(HttpStatusCode.OK, result);
         }
+        [HttpPost]
+        [Route("")]
+        public HttpResponseMessage Post(League League)
+        {
+            LeagueService service = new LeagueService();
+            List<League> result = service.Post(League);
+            if (result == null)
+            {
+                return Request.CreateResponse(HttpStatusCode.NotFound, "We could not a new league");
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, result);
+        }
     }
 }
