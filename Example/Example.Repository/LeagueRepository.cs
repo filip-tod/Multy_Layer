@@ -82,12 +82,12 @@ namespace Example.Repository
 
                                 };
                                 leagueTeams.Add(league);
-
                             }
                         }
                     }
                 }
             }
+            return leagueTeams;
         }
     }
   
