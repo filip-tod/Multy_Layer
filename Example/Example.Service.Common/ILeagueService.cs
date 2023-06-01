@@ -10,5 +10,7 @@ namespace Example.Service.Common
     public interface ILeagueService
     {
         List<League> Get();
+
+        List<League>GetById(int id);
     }
 }

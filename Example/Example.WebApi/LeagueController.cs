@@ -26,5 +26,17 @@ namespace Example.WebApi
             }
             return Request.CreateResponse(HttpStatusCode.OK, result);
         }
+        [HttpGet]
+        [Route("/1")]
+        public HttpResponseMessage GetById(int id)
+        {
+            LeagueService service = new LeagueService();
+            List<League> result = service.GetById(id);
+            if(result == null)
+            {
+                return Request.CreateResponse(HttpStatusCode.NotFound, "We could not find you'r league");
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, result);
+        }
     }
 }

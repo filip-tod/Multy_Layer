@@ -25,5 +25,18 @@ namespace Example.Service
             }
             
         }
+        public List<League> GetById(int id) 
+        {
+            try
+            {
+                LeagueRepository repository = new LeagueRepository();
+                var result = repository.GetById(id);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
     }
 }

@@ -10,5 +10,7 @@ namespace Example.Repository.Common
     public interface ILeagueRepository
     {
         List<League> Get();
+
+        List<League> GetById(int id);
     }
 }
