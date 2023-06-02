@@ -9,10 +9,15 @@ namespace Example.Service.Common
 {
     public interface ILeagueService
     {
-        List<League> Get();
+        
+        Task<List<League>> Get();
 
-        List<League>GetById(int id);
+        Task<List<League>> GetById(int id);
 
-        List<League> Post(League league);
+        Task<bool> Post(League league);
+
+        Task<bool> Put(int id, League league);
+
+        Task<bool> Delete (int id);
     }
 }

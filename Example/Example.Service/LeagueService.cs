@@ -11,12 +11,12 @@ namespace Example.Service
 {
     public class LeagueService : ILeagueService
     {
-        public List<League> Get()
+        public async Task<List<League>> Get()
         {
             try
             {
                 LeagueRepository repository = new LeagueRepository();
-                var result = repository.Get();
+                var result = await repository.Get();
                 return result;
             }
             catch (Exception ex) 
@@ -25,12 +25,12 @@ namespace Example.Service
             }
             
         }
-        public List<League> GetById(int id) 
+        public async Task<List<League>> GetById(int id) 
         {
             try
             {
                 LeagueRepository repository = new LeagueRepository();
-                var result = repository.GetById(id);
+                var result = await repository.GetById(id);
                 return result;
             }
             catch (Exception ex)
@@ -38,18 +38,32 @@ namespace Example.Service
                 return null;
             }
         }
-        public List<League> Post(League league) 
+        public async Task<bool> Post(League league) 
+        {
+            LeagueRepository repository = new LeagueRepository();
+
+            bool isCreated = await repository.Post(league);
+
+            return isCreated;
+        }
+        public async Task<bool> Put(int id,League league)
         {
             try
             {
                 LeagueRepository repository = new LeagueRepository();
-                var result = repository.Post(league);
+                var result = await repository.Put(id, league);
                 return result;
             }
             catch (Exception ex)
             {
-                return null;
+                return false;
             }
+        }
+        public async Task<bool> Delete(int id)
+        {
+            LeagueRepository repository = new LeagueRepository();
+            bool isDeleted = await repository.Delete(id);
+            return isDeleted;
         }
     }
 }
