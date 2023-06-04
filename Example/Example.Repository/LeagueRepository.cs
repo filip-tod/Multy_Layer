@@ -3,12 +3,13 @@ using Example.Repository.Common;
 using Npgsql;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Globalization;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
+using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+
 
 namespace Example.Repository
 {
@@ -18,6 +19,7 @@ namespace Example.Repository
         private static readonly string connectionString = "Server=localhost;Port=5432;User Id=postgres;Password=root;Database=playerdb;";
 
 
+    
         public async Task<List<League>> Get()
         {
             List<League> leagueTeams = new List<League>();
@@ -32,18 +34,24 @@ namespace Example.Repository
                         {
                             while (reader.Read())
                             {
-                                League league = new League();
+                                int Id = reader.GetInt32(reader.GetOrdinal("id"));
+                                string division = reader.GetString(reader.GetOrdinal("division"));
+                                string commissioner = reader.GetString(reader.GetOrdinal("commissioner"));
+                             
 
-                                league.Id = (int)reader["id"];
-                                league.Division = (string)reader["division"];
-                                league.Commissioner = (string)reader["commisioner"];
+                                var leagueTeam = new League
 
-                                leagueTeams.Add(league);
+                                {
+                                    Id = Id,
+                                    Division = division,
+                                    Commissioner = commissioner,
+ 
+                                };
+                                leagueTeams.Add(leagueTeam);
                             }
                         }
                     }
                 }
-                connection.Close();
 
             }
             return leagueTeams;
@@ -97,15 +105,14 @@ namespace Example.Repository
                     {
                         int maxId = leagueData.Max(p => p.Id);
                         int Newid = maxId ++;
-                        connection.Open();
                         NpgsqlTransaction transaction = connection.BeginTransaction();
 
 
                         NpgsqlCommand cmd = new NpgsqlCommand($"INSERT INTO nba_league (id, division, commissioner) VALUES (@id, @division, @commissioner)", connection);
 
-                        cmd.Parameters.AddWithValue("Id", Newid);
-                        cmd.Parameters.AddWithValue("FirstName", league.Division);
-                        cmd.Parameters.AddWithValue("LastName", league.Commissioner);
+                        cmd.Parameters.AddWithValue("id", Newid);
+                        cmd.Parameters.AddWithValue("division", league.Division);
+                        cmd.Parameters.AddWithValue("commisioner", league.Commissioner);
 
 
                         int affectedRowsPerson = await cmd.ExecuteNonQueryAsync();
@@ -183,6 +190,7 @@ namespace Example.Repository
                 }
             }
         }
+       
     }
 
 }
