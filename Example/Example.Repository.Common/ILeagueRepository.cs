@@ -16,5 +16,8 @@ namespace Example.Repository.Common
         Task<bool> Post(League league);
         Task<bool> Put(int id, League league);
         Task<bool> Delete(int id);
+        Task<List<League>> GetLeagues(int pageNumber, int pageSize, string sortBy);
+        
+
     }
 }

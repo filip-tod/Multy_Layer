@@ -7,6 +7,7 @@ using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Runtime.Remoting.Contexts;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -145,7 +146,7 @@ namespace Example.Repository
                 string query = "INSERT INTO nba_league  (id, division, commissioner) VALUES (@id, @division, @commissioner)";
                 using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
                 {
-                    connection.Open();
+                   
                     string querySet = "UPDATE nba_league SET ";
                     List<string> updateFields = new List<string>();
 
@@ -190,7 +191,38 @@ namespace Example.Repository
                 }
             }
         }
-       
+        public async Task<List<League>> GetLeagues(int pageNumber, int pageSize, string sortBy)
+        {
+            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            {
+                connection.Open();
+
+                var query = $"SELECT * FROM nba_league ORDER BY {sortBy} LIMIT {pageSize} OFFSET {(pageNumber - 1) * pageSize}";
+
+                using (var command = new NpgsqlCommand(query, connection))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        List<League> leagues = new List<League>();
+
+                        while (await reader.ReadAsync())
+                        {
+                            League league = new League
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("id")),
+                                Division = reader.GetString(reader.GetOrdinal("division")),
+                                Commissioner = reader.GetString(reader.GetOrdinal("commissioner"))
+                            };
+
+                            leagues.Add(league);
+                        }
+
+                        return leagues;
+                    }
+                }
+            }
+        }
+
     }
 
 }

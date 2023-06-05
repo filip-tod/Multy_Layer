@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace Example.Service.Common
 {
     public interface ILeagueService
@@ -19,5 +20,6 @@ namespace Example.Service.Common
         Task<bool> Put(int id, League league);
 
         Task<bool> Delete (int id);
+        Task<List<League>> GetLeagues(int pageNumber, int pageSize, string sortBy);
     }
 }

@@ -9,7 +9,7 @@ namespace Example.Model.Repository
     public interface ILeague
     {
         int Id { get; set; }
-         string Division { get; set; }
+        string Division { get; set; }
         string Commissioner { get; set; }
     }
 }

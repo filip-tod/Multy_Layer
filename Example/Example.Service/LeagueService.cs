@@ -1,4 +1,5 @@
-﻿using Example.Model;
+﻿using Example.common;
+using Example.Model;
 using Example.Repository;
 using Example.Service.Common;
 using System;
@@ -65,5 +66,20 @@ namespace Example.Service
             bool isDeleted = await repository.Delete(id);
             return isDeleted;
         }
+        public async Task<List<League>> GetLeagues(int pageNumber, int pageSize, string sortBy)
+        {
+            try
+            {
+                LeagueRepository repository = new LeagueRepository();
+                var result = await repository.GetLeagues(pageNumber, pageSize, sortBy);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return null;  
+            }
+        }
+
     }
 }
+
