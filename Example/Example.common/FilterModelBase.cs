@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace Example.common
 {
-    internal class Filtert<T> : List<T>
+    internal class FilterModelBase
     {
-
     }
 }

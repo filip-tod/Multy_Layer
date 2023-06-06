@@ -1,23 +1,31 @@
 ﻿using Example.common;
 using Example.Model;
 using Example.Repository;
+using Example.Repository.Common;
 using Example.Service.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace Example.Service
 {
     public class LeagueService : ILeagueService
     {
-        public async Task<List<League>> Get()
+        private ILeagueRepository LeagueRepository { get; set; }    
+        private LeagueService (ILeagueRepository repo)
+        {
+            LeagueRepository = repo;
+
+        }
+        public async Task<List<League>> GetAll()
         {
             try
             {
-                LeagueRepository repository = new LeagueRepository();
-                var result = await repository.Get();
+               
+                var result = await LeagueRepository.GetAll();
                 return result;
             }
             catch (Exception ex) 
@@ -30,8 +38,7 @@ namespace Example.Service
         {
             try
             {
-                LeagueRepository repository = new LeagueRepository();
-                var result = await repository.GetById(id);
+                var result = await LeagueRepository.GetById(id);
                 return result;
             }
             catch (Exception ex)
@@ -41,9 +48,7 @@ namespace Example.Service
         }
         public async Task<bool> Post(League league) 
         {
-            LeagueRepository repository = new LeagueRepository();
-
-            bool isCreated = await repository.Post(league);
+            bool isCreated = await LeagueRepository.Post(league);
 
             return isCreated;
         }
@@ -51,8 +56,7 @@ namespace Example.Service
         {
             try
             {
-                LeagueRepository repository = new LeagueRepository();
-                var result = await repository.Put(id, league);
+                var result = await LeagueRepository.Put(id, league);
                 return result;
             }
             catch (Exception ex)
@@ -62,23 +66,10 @@ namespace Example.Service
         }
         public async Task<bool> Delete(int id)
         {
-            LeagueRepository repository = new LeagueRepository();
-            bool isDeleted = await repository.Delete(id);
+            bool isDeleted = await LeagueRepository.Delete(id);
             return isDeleted;
         }
-        public async Task<List<League>> GetLeagues(int pageNumber, int pageSize, string sortBy)
-        {
-            try
-            {
-                LeagueRepository repository = new LeagueRepository();
-                var result = await repository.GetLeagues(pageNumber, pageSize, sortBy);
-                return result;
-            }
-            catch (Exception ex)
-            {
-                return null;  
-            }
-        }
+       
 
     }
 }

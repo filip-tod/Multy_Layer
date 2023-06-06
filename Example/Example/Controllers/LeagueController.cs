@@ -10,17 +10,27 @@ using System.Linq;
 using System.Web.Mvc;
 using Microsoft.AspNetCore.Mvc;
 using System.Web.Http.Results;
+using System.Drawing.Printing;
+using System.Globalization;
+using System;
+using Microsoft.TeamFoundation.Work.WebApi;
+using Example.Service.Common;
 
 namespace Example.WebApi
 {
     
     public class LeagueController : ApiController
     {
-        //radi 
-        public async Task<HttpResponseMessage> Get()
+        private ILeagueService LeagueService { get; set; }
+        public LeagueController(ILeagueService service) 
         {
-            LeagueService service = new LeagueService();
-            List<League> result = await service.Get();
+            LeagueService = service;
+        }
+        //radi 
+        public async Task<HttpResponseMessage> GetAll()
+        {
+            
+            List<League> result = await LeagueService.GetAll();
             if (result == null)
             {
                 return Request.CreateResponse(HttpStatusCode.NotFound, "We could not find you'r league");
@@ -30,8 +40,8 @@ namespace Example.WebApi
        
         public async Task<HttpResponseMessage> GetById(int id)
         {
-            LeagueService service = new LeagueService();
-            List<League> result = await service.GetById(id);
+            
+            List<League> result = await LeagueService.GetById(id);
             if(result == null)
             {
                 return Request.CreateResponse(HttpStatusCode.NotFound, "We could not find you'r league");
@@ -41,8 +51,8 @@ namespace Example.WebApi
       
         public async Task<HttpResponseMessage> Post(League League)
         {
-            LeagueService service = new LeagueService();
-            bool result = await service.Post(League);
+            
+            bool result = await LeagueService.Post(League);
             if (result == false)
             {
                 return Request.CreateResponse(HttpStatusCode.NotFound, "We could not add new league");
@@ -52,8 +62,8 @@ namespace Example.WebApi
       
         public async Task<HttpResponseMessage> Put(int id,League League)
         {
-            LeagueService service = new LeagueService();
-           bool result =await service.Put(id, League);
+           
+           bool result =await LeagueService.Put(id, League);
             if (result != true)
             {
                 return Request.CreateResponse(HttpStatusCode.NotFound, "We could not edit your coupon");
@@ -63,25 +73,14 @@ namespace Example.WebApi
         
         public async Task<HttpResponseMessage> Delete(int id)
         {
-            LeagueService service = new LeagueService();
-            bool result =await service.Delete(id);
+            
+            bool result =await LeagueService.Delete(id);
             if(result ==  false)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, result);
             }
             return Request.CreateResponse(HttpStatusCode.OK, "League was not found and not Deleted");
                    
-        }
-
-        public async Task<HttpResponseMessage> GetLeagues(int pageNumber, int pageSize, string sortBy)
-        {
-            LeagueService leagueService = new LeagueService();  
-            var leagues = await leagueService.GetLeagues(pageNumber, pageSize, sortBy);  
-           if(leagues == null)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "something went wrong");
-            }
-            return Request.CreateResponse(HttpStatusCode.OK, "League was not found and not Deleted");
         }
     }
 }

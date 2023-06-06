@@ -1,15 +1,12 @@
 ﻿using Example.Model;
 using Example.Repository.Common;
+using Example.Service.Common;
 using Npgsql;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Globalization;
 using System.Linq;
-using System.Net.NetworkInformation;
-using System.Runtime.Remoting.Contexts;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+
 
 
 namespace Example.Repository
@@ -17,11 +14,16 @@ namespace Example.Repository
 
     public class LeagueRepository : ILeagueRepository
     {
+        //constructor
+        public LeagueRepository(ILeagueService context)
+        {
+            Context = context;
+        }
+        public ILeagueService Context { get; private set; }
+
+
         private static readonly string connectionString = "Server=localhost;Port=5432;User Id=postgres;Password=root;Database=playerdb;";
-
-
-    
-        public async Task<List<League>> Get()
+        public async Task<List<League>> GetAll()
         {
             List<League> leagueTeams = new List<League>();
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
@@ -38,7 +40,7 @@ namespace Example.Repository
                                 int Id = reader.GetInt32(reader.GetOrdinal("id"));
                                 string division = reader.GetString(reader.GetOrdinal("division"));
                                 string commissioner = reader.GetString(reader.GetOrdinal("commissioner"));
-                             
+
 
                                 var leagueTeam = new League
 
@@ -46,12 +48,14 @@ namespace Example.Repository
                                     Id = Id,
                                     Division = division,
                                     Commissioner = commissioner,
- 
+
                                 };
                                 leagueTeams.Add(leagueTeam);
                             }
                         }
+
                     }
+
                 }
 
             }
@@ -85,9 +89,9 @@ namespace Example.Repository
                         }
 
                     }
-            
+
                 }
-                
+
             }
             return leagueTeams;
         }
@@ -105,7 +109,7 @@ namespace Example.Repository
                     try
                     {
                         int maxId = leagueData.Max(p => p.Id);
-                        int Newid = maxId ++;
+                        int Newid = maxId++;
                         NpgsqlTransaction transaction = connection.BeginTransaction();
 
 
@@ -146,7 +150,7 @@ namespace Example.Repository
                 string query = "INSERT INTO nba_league  (id, division, commissioner) VALUES (@id, @division, @commissioner)";
                 using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
                 {
-                   
+
                     string querySet = "UPDATE nba_league SET ";
                     List<string> updateFields = new List<string>();
 
@@ -165,7 +169,7 @@ namespace Example.Repository
                     query += string.Join(", ", updateFields);
                     query += " WHERE id = @id";
                     command.Parameters.AddWithValue("@id", id);
-                   await command.ExecuteNonQueryAsync();
+                    await command.ExecuteNonQueryAsync();
                 }
                 return true;
             }
@@ -185,12 +189,13 @@ namespace Example.Repository
 
                     if (rowsAffected > 0)
                     {
-                     return false;
+                        return false;
                     }
                     return true;
                 }
             }
         }
+    
         public async Task<List<League>> GetLeagues(int pageNumber, int pageSize, string sortBy)
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
@@ -220,9 +225,61 @@ namespace Example.Repository
                         return leagues;
                     }
                 }
+
+            }
+
+        }
+        public async Task<List<League>> SortLeague(string divisionFilter, string commissionerFilter)
+        {
+            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            {
+                connection.Open();
+                var query = "SELECT * FROM nba_league WHERE 1=1";
+
+                if (!string.IsNullOrEmpty(divisionFilter))
+                {
+                    query += " AND division = @divisionFilter";
+                }
+
+                if (!string.IsNullOrEmpty(commissionerFilter))
+                {
+                    query += " AND commissioner = @commissionerFilter";
+                }
+
+                using (var command = new NpgsqlCommand(query, connection))
+                {
+                    if (!string.IsNullOrEmpty(divisionFilter))
+                    {
+                        command.Parameters.AddWithValue("@divisionFilter", divisionFilter);
+                    }
+
+                    if (!string.IsNullOrEmpty(commissionerFilter))
+                    {
+                        command.Parameters.AddWithValue("@commissionerFilter", commissionerFilter);
+                    }
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        List<League> leagues = new List<League>();
+
+                        while (await reader.ReadAsync())
+                        {
+                            League league = new League
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("id")),
+                                Division = reader.GetString(reader.GetOrdinal("division")),
+                                Commissioner = reader.GetString(reader.GetOrdinal("commissioner"))
+                            };
+
+                            leagues.Add(league);
+                        }
+
+                        return leagues;
+                    }
+                }
             }
         }
+       
 
     }
-
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,7 +12,7 @@ namespace Example.Service.Common
     public interface ILeagueService
     {
         
-        Task<List<League>> Get();
+        Task<List<League>> GetAll();
 
         Task<List<League>> GetById(int id);
 
@@ -20,6 +21,5 @@ namespace Example.Service.Common
         Task<bool> Put(int id, League league);
 
         Task<bool> Delete (int id);
-        Task<List<League>> GetLeagues(int pageNumber, int pageSize, string sortBy);
     }
 }
